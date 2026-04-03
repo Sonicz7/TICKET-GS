@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Transcript - refus-❌</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        
+        :root {
+            --bg-primary: #36393f;
+            --bg-secondary: #2f3136;
+            --text-normal: #dcddde;
+            --text-muted: #72767d;
+            --link-color: #00b0f4;
+            --mention-bg: rgba(88, 101, 242, 0.3);
+            --mention-text: #dee0fc;
+            --code-bg: #2f3136;
+            --spoiler-bg: #202225;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-normal);
+            font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0;
+            font-size: 16px;
+            line-height: 1.375rem;
+        }
+
+        /* En-tête du canal */
+        .channel-header {
+            background-color: var(--bg-secondary);
+            padding: 15px 20px;
+            border-bottom: 1px solid #202225;
+            display: flex; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .channel-hash { color: #8e9297; font-size: 24px; margin-right: 8px; }
+        .channel-name { font-weight: 700; color: #fff; font-size: 16px; }
+        .transcript-info { margin-left: auto; color: var(--text-muted); font-size: 12px; }
+
+        /* Conteneur principal */
+        .chat-container { padding: 20px 0; display: flex; flex-direction: column; }
+
+        /* Message individuel */
+        .message-group {
+            display: flex;
+            padding: 5px 16px;
+            margin-top: 10px; /* Espace entre groupes */
+        }
+        .message-group:hover { background-color: rgba(4,4,5,0.07); }
+        
+        .avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 16px; margin-top: 2px; cursor: pointer; }
+        .avatar:hover { opacity: 0.8; }
+        
+        .message-content-wrapper { flex: 1; min-width: 0; }
+        
+        .message-header { display: flex; align-items: center; margin-bottom: 2px; }
+        .username { font-weight: 500; color: #fff; margin-right: 6px; cursor: pointer; }
+        .username:hover { text-decoration: underline; }
+        .bot-tag { background: #5865f2; color: #fff; font-size: 10px; padding: 2px 5px; border-radius: 3px; margin-right: 6px; font-weight: bold; }
+        .timestamp { font-size: 12px; color: var(--text-muted); margin-left: 0px; }
+
+        /* Texte du message */
+        .message-body { color: var(--text-normal); white-space: pre-wrap; word-wrap: break-word; font-weight: 400; }
+        
+        /* Markdown Styles */
+        .link { color: var(--link-color); text-decoration: none; }
+        .link:hover { text-decoration: underline; }
+        .mention { background-color: var(--mention-bg); color: var(--mention-text); padding: 0 2px; border-radius: 3px; font-weight: 500; cursor: pointer; }
+        .mention:hover { background-color: #5865f2; color: #fff; }
+        .code-block { background: var(--code-bg); padding: 8px; border-radius: 4px; border: 1px solid #202225; margin: 6px 0; font-family: 'Consolas', monospace; font-size: 14px; overflow-x: auto; }
+        .inline-code { background: var(--code-bg); padding: 2px 4px; border-radius: 3px; font-family: 'Consolas', monospace; font-size: 85%; }
+        .quote { border-left: 4px solid #4f545c; padding-left: 10px; margin: 4px 0; color: var(--text-muted); }
+
+        /* Pièces jointes */
+        .attachments { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 10px; }
+        .attachment-img { max-width: 400px; max-height: 300px; border-radius: 4px; cursor: pointer; }
+        .attachment-file { display: flex; align-items: center; background: #2f3136; border: 1px solid #292b2f; padding: 10px; border-radius: 4px; width: fit-content; }
+        .file-icon { font-size: 24px; margin-right: 10px; }
+        .file-info { display: flex; flex-direction: column; }
+        .file-name { color: var(--link-color); text-decoration: none; }
+        .file-size { font-size: 12px; color: var(--text-muted); }
+
+        /* Embeds */
+        .embed {
+            margin-top: 8px; display: flex; flex-direction: column; max-width: 520px;
+            background-color: var(--bg-secondary); border-left: 4px solid #202225;
+            padding: 10px; border-radius: 4px;
+        }
+        .embed-title { font-weight: 600; margin-bottom: 4px; }
+        .embed-title a { color: #fff; text-decoration: none; }
+        .embed-desc { font-size: 14px; color: var(--text-normal); margin-bottom: 8px; }
+        .embed-image { max-width: 100%; border-radius: 4px; margin-top: 8px; }
+        .embed-fields { display: flex; flex-wrap: wrap; margin-top: 5px; }
+        .embed-field { margin-bottom: 10px; min-width: 100%; }
+        .embed-field.inline { min-width: fit-content; margin-right: 15px; }
+        .field-name { font-weight: 600; font-size: 13px; color: #fff; margin-bottom: 2px; }
+        .field-value { font-size: 13px; color: var(--text-normal); }
+        .embed-footer { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+        
+        /* Réponse (Reply) */
+        .reply-bar { display: flex; align-items: center; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; margin-left: 18px; }
+        .reply-symbol { width: 30px; border-top: 2px solid #4f545c; border-left: 2px solid #4f545c; border-top-left-radius: 6px; height: 8px; margin-right: 5px; margin-bottom: -4px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <div class="channel-header">
+        <span class="channel-hash">#</span>
+        <span class="channel-name">refus-❌</span>
+        <div class="transcript-info">
+            Exporté le 15/02/2026
+        </div>
+    </div>
+    
+    <div class="chat-container">
+        <div style="margin: 20px; padding-bottom: 20px; border-bottom: 1px solid #42454a;">
+            <h1 style="color: white; margin-bottom: 5px;">Bienvenue dans #refus-❌ !</h1>
+            <p style="color: #b9bbbe;">Ceci est le début de l'historique de ce canal.</p>
+        </div>
+
+        
+        
+        <div class="message-group">
+            <img class="avatar" src="https://cdn.discordapp.com/embed/avatars/4.png" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+            <div class="message-content-wrapper">
+                <div class="message-header">
+                    <span class="username" style="color: #ffffff">ticket sonic</span>
+                    <span class="bot-tag">BOT</span>
+                    <span class="timestamp">15/02/2026 à 21:00</span>
+                </div>
+                <div class="message-body">
+                    &lt;@&amp;1472652536858021992&gt; Un membre de l'équipe va s'occuper de ce ticket.
+                </div>
+                
+                
+            </div>
+        </div>
+        
+        
+        <div class="message-group">
+            <img class="avatar" src="https://cdn.discordapp.com/embed/avatars/4.png" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+            <div class="message-content-wrapper">
+                <div class="message-header">
+                    <span class="username" style="color: #ffffff">ticket sonic</span>
+                    <span class="bot-tag">BOT</span>
+                    <span class="timestamp">15/02/2026 à 21:00</span>
+                </div>
+                <div class="message-body">
+                    
+                </div>
+                
+                <div class="embed" style="border-left-color: #3498db;"><div class="embed-title"><a href="#" target="_blank">Ticket en cours</a></div><div class="embed-desc"><span class="mention">@Utilisateur</span> a ouvert ce ticket.<br><br>Veuillez poster votre candidature en prenant exemple sur <span class="mention">#channel</span>.<br>Un membre de l'équipe va te répondre bientôt.</div></div>
+            </div>
+        </div>
+        
+        
+        <div class="message-group">
+            <img class="avatar" src="https://cdn.discordapp.com/avatars/744346198785130507/7466cc5afdd9efb4bfd9720b00529950.webp?size=128" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+            <div class="message-content-wrapper">
+                <div class="message-header">
+                    <span class="username" style="color: #ffffff">.Sonic</span>
+                    
+                    <span class="timestamp">15/02/2026 à 21:19</span>
+                </div>
+                <div class="message-body">
+                    sadzqdqd
+                </div>
+                
+                
+            </div>
+        </div>
+        
+        
+        <div class="message-group">
+            <img class="avatar" src="https://cdn.discordapp.com/avatars/744346198785130507/7466cc5afdd9efb4bfd9720b00529950.webp?size=128" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+            <div class="message-content-wrapper">
+                <div class="message-header">
+                    <span class="username" style="color: #ffffff">.Sonic</span>
+                    
+                    <span class="timestamp">15/02/2026 à 21:19</span>
+                </div>
+                <div class="message-body">
+                    dqzdqdq
+                </div>
+                
+                
+            </div>
+        </div>
+        
+        
+        <div class="message-group">
+            <img class="avatar" src="https://cdn.discordapp.com/avatars/744346198785130507/7466cc5afdd9efb4bfd9720b00529950.webp?size=128" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+            <div class="message-content-wrapper">
+                <div class="message-header">
+                    <span class="username" style="color: #ffffff">.Sonic</span>
+                    
+                    <span class="timestamp">15/02/2026 à 21:19</span>
+                </div>
+                <div class="message-body">
+                    dqdqdqdq
+                </div>
+                
+                
+            </div>
+        </div>
+        
+        
+        <div class="message-group">
+            <img class="avatar" src="https://cdn.discordapp.com/avatars/744346198785130507/7466cc5afdd9efb4bfd9720b00529950.webp?size=128" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+            <div class="message-content-wrapper">
+                <div class="message-header">
+                    <span class="username" style="color: #ffffff">.Sonic</span>
+                    
+                    <span class="timestamp">15/02/2026 à 21:19</span>
+                </div>
+                <div class="message-body">
+                    dsalkut
+                </div>
+                
+                
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

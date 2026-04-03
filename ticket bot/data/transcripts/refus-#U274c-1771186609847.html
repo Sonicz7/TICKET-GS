@@ -1,0 +1,235 @@
+
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Transcript - refus-❌</title>
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        
+        :root {
+            --bg-primary: #36393f;
+            --bg-secondary: #2f3136;
+            --text-normal: #dcddde;
+            --text-muted: #72767d;
+            --header-primary: #ffffff;
+            --divider: #42454a;
+            --link: #00b0f4;
+            --embed-bg: #2f3136;
+        }
+
+        body {
+            font-family: 'Roboto', "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-normal);
+            margin: 0;
+            padding: 0;
+            font-size: 16px;
+            line-height: 1.375rem;
+        }
+
+        /* Header du haut */
+        .top-bar {
+            background-color: var(--bg-secondary);
+            padding: 12px 20px;
+            border-bottom: 1px solid #202225;
+            box-shadow: 0 1px 0 rgba(4,4,5,0.2),0 1.5px 0 rgba(6,6,7,0.05),0 2px 0 rgba(4,4,5,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+        }
+
+        .channel-icon {
+            color: #8e9297;
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .channel-name {
+            font-weight: 700;
+            color: var(--header-primary);
+            font-size: 16px;
+        }
+
+        .transcript-container {
+            padding: 20px 0;
+            max-width: 100%;
+        }
+
+        /* Bloc de message */
+        .message-group {
+            display: flex;
+            padding: 10px 16px;
+            margin-top: 0; 
+        }
+
+        .message-group:hover {
+            background-color: rgba(4, 4, 5, 0.07);
+        }
+
+        .avatar-wrapper {
+            width: 50px;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: opacity 0.1s;
+        }
+
+        .avatar:hover {
+            opacity: 0.8;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .username {
+            font-weight: 500;
+            color: var(--header-primary);
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        .username:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .bot-tag {
+            background-color: #5865f2;
+            color: white;
+            font-size: 0.625rem;
+            padding: 1px 4px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-right: 8px;
+            vertical-align: middle;
+            height: 15px;
+            line-height: 15px;
+        }
+
+        .timestamp {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .message-content {
+            color: var(--text-normal);
+            font-weight: 400;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .message-content a {
+            color: var(--link);
+            text-decoration: none;
+        }
+
+        .message-content a:hover {
+            text-decoration: underline;
+        }
+        
+        .attachment-info {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-top: 5px;
+            background: #2f3136;
+            padding: 5px;
+            border-radius: 5px;
+            display: inline-block;
+            border-left: 3px solid #faa61a;
+        }
+
+        /* Intro du channel */
+        .intro-container {
+            margin: 20px 16px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--divider);
+        }
+        .intro-header {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--header-primary);
+            margin-bottom: 8px;
+        }
+        .intro-sub {
+            color: var(--text-muted);
+        }
+    </style>
+    </head>
+    <body>
+        
+        <div class="top-bar">
+            <span class="channel-icon">#</span>
+            <span class="channel-name">refus-❌</span>
+        </div>
+
+        <div class="transcript-container">
+            
+            <div class="intro-container">
+                <div class="intro-header">Bienvenue dans #refus-❌ !</div>
+                <div class="intro-sub">Ceci est le début de l'historique de ce ticket.</div>
+            </div>
+    
+        <div class="message-group">
+            <div class="avatar-wrapper">
+                <img src="https://cdn.discordapp.com/embed/avatars/4.png" alt="Avatar" class="avatar">
+            </div>
+            <div class="content-wrapper">
+                <div class="header">
+                    <span class="username" style="color: white">
+                        ticket sonic
+                    </span>
+                    <span class="bot-tag">BOT</span>
+                    <span class="timestamp">15/02/2026 à 21:00</span>
+                </div>
+                <div class="message-content">
+                    &lt;@&1472652536858021992&gt; Un membre de l'équipe va s'occuper de ce ticket.
+                    
+                </div>
+            </div>
+        </div>
+        
+        <div class="message-group">
+            <div class="avatar-wrapper">
+                <img src="https://cdn.discordapp.com/embed/avatars/4.png" alt="Avatar" class="avatar">
+            </div>
+            <div class="content-wrapper">
+                <div class="header">
+                    <span class="username" style="color: white">
+                        ticket sonic
+                    </span>
+                    <span class="bot-tag">BOT</span>
+                    <span class="timestamp">15/02/2026 à 21:00</span>
+                </div>
+                <div class="message-content">
+                    <em>(Message vide ou contenu système)</em>
+                    
+                </div>
+            </div>
+        </div>
+        
+        </div> <script>
+            // Petit script pour scroller en bas automatiquement à l'ouverture (optionnel)
+            // window.scrollTo(0, document.body.scrollHeight);
+        </script>
+    </body>
+    </html>
+    
