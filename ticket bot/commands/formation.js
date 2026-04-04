@@ -65,7 +65,7 @@ export default {
     .setTitle('Formation en cours')
     .setDescription(`${candidat ? `<@${candidatId}>` : 'Le candidat'} a été accepté(e) dans l'équipe.\n\nUn formateur va te contacter prochainement pour organiser ta formation.\nReste disponible et n'hésite pas à poser tes questions ici.`)
                 .setColor(0x57F287)
-                .setFooter({ text: 'Gang Squad • Recrutement' })
+                .setFooter({ text: 'GS • Recrutement' })
                 .setTimestamp();
 
             // Ping candidat + formateurs hors embed
