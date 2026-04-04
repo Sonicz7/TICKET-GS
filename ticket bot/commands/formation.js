@@ -64,7 +64,7 @@ export default {
             const embed = new EmbedBuilder()
     .setTitle('Formation en cours')
     .setDescription(`${candidat ? `<@${candidatId}>` : 'Le candidat'} a été accepté(e) dans l'équipe.\n\nUn formateur va te contacter prochainement pour organiser ta formation.\nReste disponible et n'hésite pas à poser tes questions ici.`)
-                .setColor(Blue)
+                .setColor('Blue')
                 .setFooter({ text: 'GS • Recrutement' })
                 .setTimestamp();
 
