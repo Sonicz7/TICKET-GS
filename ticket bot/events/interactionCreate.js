@@ -1,8 +1,33 @@
 import { 
     createTicket, 
     closeTicket, 
-    getActiveTickets
+    getActiveTickets,
+    saveActiveTickets
 } from '../utils/ticketManager.js';
+import config from '../config/config.js';
+
+/**
+ * Tente de retrouver le propriétaire du ticket depuis l'historique des messages du channel.
+ * Cherche le premier utilisateur non-bot mentionné dans l'embed d'ouverture.
+ */
+async function recoverTicketOwner(channel) {
+    try {
+        const messages = await channel.messages.fetch({ limit: 10 });
+        for (const msg of messages.values()) {
+            if (msg.author.bot && msg.embeds.length > 0) {
+                const embed = msg.embeds[0];
+                if (embed.description) {
+                    // Cherche une mention utilisateur dans la description de l'embed
+                    const match = embed.description.match(/<@!?(\d+)>/);
+                    if (match) return match[1];
+                }
+            }
+        }
+    } catch (err) {
+        console.error('Erreur récupération owner ticket:', err);
+    }
+    return null;
+}
 
 export default {
     name: 'interactionCreate',
@@ -21,9 +46,29 @@ export default {
         }
 
         const activeTickets = getActiveTickets();
-        const ticketEntry = Object.entries(activeTickets).find(([uid, data]) => data.channelId === interaction.channel.id);
+        let ticketEntry = Object.entries(activeTickets).find(([uid, data]) => data.channelId === interaction.channel.id);
+
+        // 🔧 Auto-récupération : si le ticket n'est pas dans activeTickets (ex: après redémarrage),
+        // on tente de retrouver le propriétaire depuis l'historique du channel.
         if (!ticketEntry) {
-            return interaction.reply({ content: '⚠️ Ce salon n\'est pas reconnu comme un ticket actif.', ephemeral: true });
+            const channel = interaction.channel;
+            const isTicketChannel = channel.name.startsWith(config.ticketName + '-') &&
+                channel.parentId === config.ticketCategory;
+
+            if (isTicketChannel) {
+                const recoveredUserId = await recoverTicketOwner(channel);
+                if (recoveredUserId) {
+                    // Réenregistre le ticket dans activeTickets
+                    activeTickets[recoveredUserId] = { channelId: channel.id, transcriptDone: false };
+                    saveActiveTickets(activeTickets);
+                    ticketEntry = [recoveredUserId, activeTickets[recoveredUserId]];
+                    console.log(`✅ Ticket auto-récupéré pour ${recoveredUserId} dans #${channel.name}`);
+                }
+            }
+
+            if (!ticketEntry) {
+                return interaction.reply({ content: '⚠️ Ce salon n\'est pas reconnu comme un ticket actif.', ephemeral: true });
+            }
         }
 
         const [userId] = ticketEntry;
