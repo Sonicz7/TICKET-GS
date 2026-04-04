@@ -2,7 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js';
+import { Client, GatewayIntentBits, Collection, Partials, MessageFlags } from 'discord.js';
 import './keepalive.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -50,10 +50,16 @@ client.on('interactionCreate', async interaction => {
         await command.execute(interaction);
     } catch (err) {
         console.error(err);
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ content: '❌ Une erreur est survenue.', ephemeral: true });
-        } else {
-            await interaction.reply({ content: '❌ Une erreur est survenue.', ephemeral: true });
+        // Si l'interaction est déjà deferred ou replied, on utilise editReply
+        // Sinon on essaie reply — mais on ne fait jamais les deux
+        try {
+            if (interaction.deferred) {
+                await interaction.editReply({ content: '❌ Une erreur est survenue.' });
+            } else if (!interaction.replied) {
+                await interaction.reply({ content: '❌ Une erreur est survenue.', flags: MessageFlags.Ephemeral });
+            }
+        } catch (e) {
+            console.error('Impossible d\'envoyer le message d\'erreur:', e.message);
         }
     }
 });
