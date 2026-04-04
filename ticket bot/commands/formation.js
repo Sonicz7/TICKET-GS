@@ -62,17 +62,8 @@ export default {
             await channel.permissionOverwrites.set(permissionOverwrites);
 
             const embed = new EmbedBuilder()
-                .setTitle('🎉 Félicitations, tu es accepté(e) !')
-                .setDescription(
-                    `Bienvenue parmi nous ${candidat ? `<@${candidatId}>` : 'candidat'} ! 🥳\n\n` +
-                    `Ta candidature a été **validée** par l'équipe et nous sommes vraiment contents de t'avoir avec nous.\n\n` +
-                    `**📚 Voici la suite du processus :**\n` +
-                    `> **1.** Un **formateur** va te contacter très prochainement pour organiser ta formation.\n` +
-                    `> **2.** La formation te permettra de découvrir nos règles, nos méthodes et ton rôle au sein de l'équipe.\n` +
-                    `> **3.** Une fois ta formation terminée, tu recevras ton rôle définitif et tu pourras commencer.\n\n` +
-                    `💬 Reste disponible et attentif aux messages de ton formateur. Si tu as des questions, n'hésite pas à les poser ici !\n\n` +
-                    `*À très vite et encore félicitations !* 🚀`
-                )
+    .setTitle('Formation en cours')
+    .setDescription(`${candidat ? `<@${candidatId}>` : 'Le candidat'} a été accepté(e) dans l'équipe.\n\nUn formateur va te contacter prochainement pour organiser ta formation.\nReste disponible et n'hésite pas à poser tes questions ici.`)
                 .setColor(0x57F287)
                 .setFooter({ text: 'Gang Squad • Recrutement' })
                 .setTimestamp();
