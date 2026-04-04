@@ -45,6 +45,15 @@ export default {
             delete activeTickets[candidatId];
             saveActiveTickets(activeTickets);
 
+            // Envoyer l'embed AVANT de changer les permissions (sinon le bot perd l'accès)
+            const embed = new EmbedBuilder()
+                .setTitle('Formation terminée')
+                .setDescription(`Le ticket de ${candidat ? `<@${candidatId}>` : 'ce candidat'} a été clôturé.\n\nLe transcript a été sauvegardé et le salon a été archivé.`)
+                .setColor(0xED4245)
+                .setTimestamp();
+
+            await channel.send({ embeds: [embed] });
+
             await channel.setName(`fini-${candidat ? candidat.user.username : 'candidat'}`);
             await channel.setParent(ACCEPTE_CATEGORY);
 
@@ -53,13 +62,6 @@ export default {
                 { id: config.staffRole, allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'] }
             ]);
 
-            const embed = new EmbedBuilder()
-                .setTitle('Formation terminée')
-                .setDescription(`Le ticket de ${candidat ? `<@${candidatId}>` : 'ce candidat'} a été clôturé.\n\nLe transcript a été sauvegardé et le salon a été archivé.`)
-                .setColor(0xED4245)
-                .setTimestamp();
-
-            await channel.send({ embeds: [embed] });
             await interaction.editReply({ content: '✅ Ticket clôturé avec succès.' });
 
         } catch (err) {
