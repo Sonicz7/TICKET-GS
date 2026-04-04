@@ -1,17 +1,25 @@
 import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js';
 import './keepalive.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+process.chdir(__dirname);
+
 const client = new Client({
-    intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
-    partials: [Partials.Channel, Partials.Message]
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMembers
+    ],
+    partials: [Partials.Channel, Partials.Message, Partials.GuildMember]
 });
 
 client.events = new Collection();
 
-const eventsPath = path.join('./events');
+const eventsPath = path.join(__dirname, 'events');
 fs.readdirSync(eventsPath).forEach(file => {
     if (!file.endsWith('.js')) return;
     import(`./events/${file}`).then(eventFile => {
@@ -23,7 +31,7 @@ fs.readdirSync(eventsPath).forEach(file => {
 
 client.commands = new Collection();
 
-const commandsPath = path.join('./commands');
+const commandsPath = path.join(__dirname, 'commands');
 fs.readdirSync(commandsPath).forEach(file => {
     if (!file.endsWith('.js')) return;
     import(`./commands/${file}`).then(cmd => {
@@ -42,7 +50,11 @@ client.on('interactionCreate', async interaction => {
         await command.execute(interaction);
     } catch (err) {
         console.error(err);
-        await interaction.reply({ content: '❌ Une erreur est survenue.', ephemeral: true });
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({ content: '❌ Une erreur est survenue.', ephemeral: true });
+        } else {
+            await interaction.reply({ content: '❌ Une erreur est survenue.', ephemeral: true });
+        }
     }
 });
 
