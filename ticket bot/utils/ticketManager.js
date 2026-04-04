@@ -399,7 +399,7 @@ export async function generateTranscript(channel) {
 <div class="layout">
     <div class="sidebar">
         <div class="sidebar-header">
-            <div class="server-name">Gang Squad</div>
+            <div class="server-name">GS STAFF</div>
         </div>
         <div class="sidebar-section">
             <span class="sidebar-label">Recrutement</span>
