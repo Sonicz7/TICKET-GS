@@ -75,7 +75,7 @@ export default {
                     `Le ticket de ${candidat ? `**${candidat.user.username}**` : 'ce candidat'} a été **clôturé** suite à la fin de sa formation.\n\n` +
                     `Le transcript a été sauvegardé et le salon a été archivé.`
                 )
-                .setColor(Blue)
+                .setColor('Blue')
                 .setFooter({ text: `Clôturé par ${member.user.username} • Gang Squad` })
                 .setTimestamp();
 
