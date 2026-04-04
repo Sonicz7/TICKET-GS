@@ -1,60 +1,35 @@
-import { SlashCommandBuilder, PermissionsBitField } from 'discord.js';
-import fs from 'fs';
-import config from '../config/config.js';
+import { SlashCommandBuilder } from 'discord.js';
 import { getTicketByChannel } from '../utils/ticketManager.js';
-
-const activeTicketsPath = './data/activeTickets.json';
-
-export function getActiveTickets() {
-    try {
-        const data = fs.readFileSync(activeTicketsPath, 'utf8');
-        if (!data) return {};
-        return JSON.parse(data);
-    } catch {
-        return {};
-    }
-}
+import config from '../config/config.js';
 
 export default {
     data: new SlashCommandBuilder()
         .setName('rename')
         .setDescription('Renommer un ticket (staff uniquement)')
         .addStringOption(option =>
-            option.setName('nom')
-                .setDescription('Nouveau nom du ticket')
-                .setRequired(true)
+            option.setName('nom').setDescription('Nouveau nom du ticket').setRequired(true)
         ),
 
     async execute(interaction) {
         const member = interaction.member;
 
         if (!member.roles.cache.has(config.staffRole)) {
-            return interaction.reply({
-                content: '❌ Tu n’as pas la permission d’utiliser cette commande.',
-                ephemeral: true
-            });
+            return interaction.reply({ content: '❌ Tu n\'as pas la permission d\'utiliser cette commande.', ephemeral: true });
         }
 
-        const activeTickets = getActiveTickets();
-
         const ticketData = getTicketByChannel(interaction.channel.id);
-if (!ticketData) {
-    return interaction.reply({ content: '⚠️ Cette commande ne peut être utilisée que dans un ticket.', ephemeral: true });
-}
+        if (!ticketData) {
+            return interaction.reply({ content: '⚠️ Cette commande ne peut être utilisée que dans un ticket.', ephemeral: true });
+        }
 
         const newName = interaction.options.getString('nom');
 
-        await interaction.channel.setName(newName).catch(err => {
+        try {
+            await interaction.channel.setName(newName);
+            return interaction.reply({ content: `✅ Le ticket a été renommé en **${newName}**.`, ephemeral: true });
+        } catch (err) {
             console.error(err);
-            return interaction.reply({
-                content: '❌ Impossible de renommer le ticket.',
-                ephemeral: true
-            });
-        });
-
-        return interaction.reply({
-            content: `✅ Le ticket a été renommé en **${newName}**.`,
-            ephemeral: true
-        });
+            return interaction.reply({ content: '❌ Impossible de renommer le ticket.', ephemeral: true });
+        }
     }
 };

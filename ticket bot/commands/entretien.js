@@ -13,46 +13,31 @@ export default {
         const channel = interaction.channel;
 
         if (!member.roles.cache.has(config.staffRole)) {
-            return interaction.reply({
-                content: '❌ Tu n\'as pas la permission d\'utiliser cette commande.',
-                ephemeral: true
-            });
+            return interaction.reply({ content: '❌ Tu n\'as pas la permission d\'utiliser cette commande.', ephemeral: true });
         }
 
         const ticketData = getTicketByChannel(channel.id);
         if (!ticketData) {
-            return interaction.reply({
-                content: '⚠️ Cette commande ne peut être utilisée que dans un ticket.',
-                ephemeral: true
-            });
+            return interaction.reply({ content: '⚠️ Cette commande ne peut être utilisée que dans un ticket.', ephemeral: true });
         }
 
         const candidatId = ticketData.memberId;
         const candidat = await guild.members.fetch(candidatId).catch(() => null);
 
         try {
-            // Rename le ticket
             await channel.setName(`entretien-${candidat ? candidat.user.username : 'candidat'}`);
 
             const embed = new EmbedBuilder()
-    .setTitle('Entretien')
-    .setDescription(`${candidat ? `<@${candidatId}>` : 'Le candidat'} a été sélectionné(e) pour un entretien.\n\nMerci de nous indiquer tes disponibilités pour convenir d'un créneau ensemble.`)
-    .setColor('Blue')
-                .setFooter({ text: 'GS • Recrutement' })
+                .setTitle('Entretien')
+                .setDescription(`${candidat ? `<@${candidatId}>` : 'Le candidat'} a été sélectionné(e) pour un entretien.\n\nMerci de nous indiquer tes disponibilités pour convenir d'un créneau ensemble.`)
+                .setColor(0x5865F2)
                 .setTimestamp();
 
-            // Ping hors embed
-            await interaction.reply({
-                content: `<@${candidatId}>`,
-                embeds: [embed]
-            });
+            await interaction.reply({ content: `<@${candidatId}>`, embeds: [embed] });
 
         } catch (err) {
             console.error('Erreur lors de la commande /entretien :', err);
-            return interaction.reply({
-                content: '❌ Une erreur est survenue.',
-                ephemeral: true
-            });
+            return interaction.reply({ content: '❌ Une erreur est survenue.', ephemeral: true });
         }
     }
 };
