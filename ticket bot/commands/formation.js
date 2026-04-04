@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { getActiveTickets, saveActiveTickets, getTicketByChannel } from '../utils/ticketManager.js';
+import { getActiveTickets, saveActiveTickets, getTicketByChannel, getTicketByChannelOrRecover } from '../utils/ticketManager.js';
 import config from '../config/config.js';
 
 const ACCEPTE_CATEGORY = '1487854009502007317';
@@ -19,7 +19,7 @@ export default {
             return interaction.reply({ content: '❌ Tu n\'as pas la permission d\'utiliser cette commande.', ephemeral: true });
         }
 
-        const ticketData = getTicketByChannel(channel.id);
+        const ticketData = await getTicketByChannelOrRecover(channel, config);
         if (!ticketData) {
             return interaction.reply({ content: '⚠️ Cette commande ne peut être utilisée que dans un ticket.', ephemeral: true });
         }

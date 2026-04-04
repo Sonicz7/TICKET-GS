@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from 'discord.js';
-import { getTicketByChannel } from '../utils/ticketManager.js';
+import { getTicketByChannel, getTicketByChannelOrRecover } from '../utils/ticketManager.js';
 import config from '../config/config.js';
 
 export default {
@@ -17,7 +17,7 @@ export default {
             return interaction.reply({ content: '❌ Tu n\'as pas la permission d\'utiliser cette commande.', ephemeral: true });
         }
 
-        const ticketData = getTicketByChannel(interaction.channel.id);
+        const ticketData = await getTicketByChannelOrRecover(interaction.channel, config);
         if (!ticketData) {
             return interaction.reply({ content: '⚠️ Cette commande ne peut être utilisée que dans un ticket.', ephemeral: true });
         }
