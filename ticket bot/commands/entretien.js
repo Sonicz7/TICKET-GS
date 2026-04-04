@@ -1,5 +1,5 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { getTicketByChannel, getTicketByChannelOrRecover } from '../utils/ticketManager.js';
+import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from 'discord.js';
+import { getTicketByChannelOrRecover } from '../utils/ticketManager.js';
 import config from '../config/config.js';
 
 export default {
@@ -13,12 +13,15 @@ export default {
         const channel = interaction.channel;
 
         if (!member.roles.cache.has(config.staffRole)) {
-            return interaction.reply({ content: '❌ Tu n\'as pas la permission d\'utiliser cette commande.', ephemeral: true });
+            return interaction.reply({ content: '❌ Tu n\'as pas la permission d\'utiliser cette commande.', flags: MessageFlags.Ephemeral });
         }
+
+        // Defer immédiatement pour éviter l'expiration de l'interaction (timeout 3s)
+        await interaction.deferReply();
 
         const ticketData = await getTicketByChannelOrRecover(channel, config);
         if (!ticketData) {
-            return interaction.reply({ content: '⚠️ Cette commande ne peut être utilisée que dans un ticket.', ephemeral: true });
+            return interaction.editReply({ content: '⚠️ Cette commande ne peut être utilisée que dans un ticket.' });
         }
 
         const candidatId = ticketData.memberId;
@@ -33,11 +36,11 @@ export default {
                 .setColor(0x5865F2)
                 .setTimestamp();
 
-            await interaction.reply({ content: `<@${candidatId}>`, embeds: [embed] });
+            await interaction.editReply({ content: `<@${candidatId}>`, embeds: [embed] });
 
         } catch (err) {
             console.error('Erreur lors de la commande /entretien :', err);
-            return interaction.reply({ content: '❌ Une erreur est survenue.', ephemeral: true });
+            await interaction.editReply({ content: '❌ Une erreur est survenue.' });
         }
     }
 };

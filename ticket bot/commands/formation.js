@@ -1,5 +1,5 @@
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { getActiveTickets, saveActiveTickets, getTicketByChannel, getTicketByChannelOrRecover } from '../utils/ticketManager.js';
+import { SlashCommandBuilder, EmbedBuilder, MessageFlags } from 'discord.js';
+import { getActiveTickets, saveActiveTickets, getTicketByChannelOrRecover } from '../utils/ticketManager.js';
 import config from '../config/config.js';
 
 const ACCEPTE_CATEGORY = '1487854009502007317';
@@ -16,12 +16,15 @@ export default {
         const channel = interaction.channel;
 
         if (!member.roles.cache.has(config.staffRole)) {
-            return interaction.reply({ content: '❌ Tu n\'as pas la permission d\'utiliser cette commande.', ephemeral: true });
+            return interaction.reply({ content: '❌ Tu n\'as pas la permission d\'utiliser cette commande.', flags: MessageFlags.Ephemeral });
         }
+
+        // Defer immédiatement pour éviter l'expiration de l'interaction (timeout 3s)
+        await interaction.deferReply();
 
         const ticketData = await getTicketByChannelOrRecover(channel, config);
         if (!ticketData) {
-            return interaction.reply({ content: '⚠️ Cette commande ne peut être utilisée que dans un ticket.', ephemeral: true });
+            return interaction.editReply({ content: '⚠️ Cette commande ne peut être utilisée que dans un ticket.' });
         }
 
         const candidatId = ticketData.memberId;
@@ -47,11 +50,11 @@ export default {
                 .setTimestamp();
 
             const pingContent = FORMATEUR_ROLE ? `<@${candidatId}> <@&${FORMATEUR_ROLE}>` : `<@${candidatId}>`;
-            await interaction.reply({ content: pingContent, embeds: [embed] });
+            await interaction.editReply({ content: pingContent, embeds: [embed] });
 
         } catch (err) {
             console.error('Erreur lors de la commande /formation :', err);
-            return interaction.reply({ content: '❌ Une erreur est survenue.', ephemeral: true });
+            await interaction.editReply({ content: '❌ Une erreur est survenue.' });
         }
     }
 };
