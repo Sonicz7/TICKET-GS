@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: ticket-bot-discord
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: TOKEN
+        sync: false
+      - key: CLIENT_ID
+        sync: false
+      - key: GUILD_ID
+        sync: false
+    autoDeploy: true

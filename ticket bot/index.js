@@ -2,6 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js';
+import './keepalive.js';
 
 const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
