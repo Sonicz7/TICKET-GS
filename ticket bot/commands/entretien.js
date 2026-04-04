@@ -37,7 +37,7 @@ export default {
             const embed = new EmbedBuilder()
     .setTitle('Entretien')
     .setDescription(`${candidat ? `<@${candidatId}>` : 'Le candidat'} a été sélectionné(e) pour un entretien.\n\nMerci de nous indiquer tes disponibilités pour convenir d'un créneau ensemble.`)
-    .setColor(Blue)
+    .setColor('Blue')
                 .setFooter({ text: 'GS • Recrutement' })
                 .setTimestamp();
 
