@@ -47,6 +47,45 @@ export function getTicketByChannel(channelId) {
     return null;
 }
 
+/**
+ * Version async de getTicketByChannel qui, si le ticket n'est pas dans activeTickets.json,
+ * tente de récupérer l'owner depuis l'historique Discord et le réenregistre.
+ * À utiliser dans toutes les commandes slash à la place de getTicketByChannel().
+ */
+export async function getTicketByChannelOrRecover(channel, config) {
+    // 1. Cherche dans le cache local d'abord
+    const found = getTicketByChannel(channel.id);
+    if (found) return found;
+
+    // 2. Vérifie que c'est bien un channel de ticket (catégorie ticket OU channel renommé avec préfixe connu)
+    const isInTicketCategory = channel.parentId === config.ticketCategory;
+    const looksLikeTicket = /^(ticket|entretien|formation|fini|refus)-/.test(channel.name);
+    if (!isInTicketCategory && !looksLikeTicket) return null;
+
+    // 3. Tente de retrouver l'owner depuis l'embed d'ouverture du bot
+    try {
+        const messages = await channel.messages.fetch({ limit: 20 });
+        for (const msg of [...messages.values()].reverse()) { // ordre chronologique
+            if (!msg.author.bot) continue;
+            if (msg.embeds.length === 0) continue;
+            const desc = msg.embeds[0]?.description || '';
+            const match = desc.match(/<@!?(\d+)>/);
+            if (match) {
+                const memberId = match[1];
+                const activeTickets = getActiveTickets();
+                activeTickets[memberId] = { channelId: channel.id, transcriptDone: false };
+                saveActiveTickets(activeTickets);
+                console.log(`🔄 Ticket auto-récupéré: #${channel.name} → userId:${memberId}`);
+                return { memberId, ticket: activeTickets[memberId] };
+            }
+        }
+    } catch (err) {
+        console.error('Erreur récupération ticket depuis Discord:', err);
+    }
+
+    return null;
+}
+
 export function getTicketByMember(memberId) {
     const activeTickets = getActiveTickets();
     if (activeTickets[memberId]) {
