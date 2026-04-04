@@ -40,8 +40,7 @@ export default {
                     `Salut ${candidat ? `<@${candidatId}>` : 'candidat'} ! 👋\n\n` +
                     `Après avoir examiné ta candidature avec attention, nous sommes ravis de t'informer que **nous souhaiterions te rencontrer en entretien** afin d'en apprendre davantage sur toi.\n\n` +
                     `Pourrais-tu nous indiquer **tes disponibilités** pour qu'on puisse convenir d'un créneau ensemble ?\n\n` +
-                    `> 📅 Merci de préciser les **jours et horaires** qui te conviennent le mieux.\n` +
-                    `> 🎙️ L'entretien se déroulera en **vocal** sur le serveur.\n\n` +
+                    `> Merci de préciser les **jours et horaires** qui te conviennent le mieux.\n` +
                     `On reste disponibles si tu as la moindre question. À très vite !`
                 )
                 .setColor(0x5865F2)
