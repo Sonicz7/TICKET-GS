@@ -44,7 +44,7 @@ export default {
                     `On reste disponibles si tu as la moindre question. À très vite !`
                 )
                 .setColor(0x5865F2)
-                .setFooter({ text: 'Gang Squad • Recrutement' })
+                .setFooter({ text: 'GS • Recrutement' })
                 .setTimestamp();
 
             // Ping hors embed
