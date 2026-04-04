@@ -1,10 +1,12 @@
 import { PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import fs from 'fs';
-import path from 'path'
+import path from 'path';
+import { fileURLToPath } from 'url';
 import config from '../config/config.js';
 
-const counterPath = './data/ticketCounter.json';
-const activeTicketsPath = './data/activeTickets.json';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const counterPath = path.join(__dirname, '../data/ticketCounter.json');
+const activeTicketsPath = path.join(__dirname, '../data/activeTickets.json');
 
 if (!fs.existsSync(counterPath)) fs.writeFileSync(counterPath, JSON.stringify({ count: 0 }));
 if (!fs.existsSync(activeTicketsPath)) fs.writeFileSync(activeTicketsPath, JSON.stringify({}));
@@ -398,7 +400,7 @@ export async function generateTranscript(channel) {
 </body>
 </html>`;
 
-    const transcriptsDir = path.resolve('./data/transcripts');
+    const transcriptsDir = path.join(__dirname, '../data/transcripts');
     if (!fs.existsSync(transcriptsDir)) fs.mkdirSync(transcriptsDir, { recursive: true });
 
     const filePath = path.join(transcriptsDir, `${channel.name}-${Date.now()}.html`);
