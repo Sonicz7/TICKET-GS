@@ -105,7 +105,8 @@ export async function createTicket(interaction) {
         permissionOverwrites: [
             { id: guild.roles.everyone.id, deny: [PermissionsBitField.Flags.ViewChannel] },
             { id: member.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
-            { id: config.staffRole, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] }
+            { id: config.staffRole, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
+            { id: config.viewerRole, allow: [PermissionsBitField.Flags.ViewChannel], deny: [PermissionsBitField.Flags.SendMessages] }
         ]
     });
 
