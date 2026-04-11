@@ -36,7 +36,8 @@ export default {
 
             const permissionOverwrites = [
                 { id: guild.roles.everyone.id, deny: ['ViewChannel'] },
-                { id: config.staffRole, allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'] }
+                { id: config.staffRole, allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'] },
+                { id: config.viewerRole, allow: ['ViewChannel', 'ReadMessageHistory'], deny: ['SendMessages'] }
             ];
             if (candidatId) {
                 permissionOverwrites.push({ id: candidatId, allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'] });

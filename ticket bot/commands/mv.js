@@ -13,17 +13,20 @@ export default {
 
     async execute(interaction) {
         if (!interaction.member.roles.cache.has(config.staffRole)) {
-            return interaction.reply({ content: '❌ Vous n\'avez pas la permission de faire ça.', ephemeral: true });
+            return interaction.reply({ content: "❌ Vous n'avez pas la permission de faire ça.", ephemeral: true });
         }
 
         const user = interaction.options.getUser('membre');
-        const memberGuild = interaction.guild.members.cache.get(user.id);
         const destinationChannel = interaction.options.getChannel('destination');
 
-        if (!memberGuild) {
+        let memberGuild;
+        try {
+            memberGuild = await interaction.guild.members.fetch(user.id);
+        } catch {
             return interaction.reply({ content: '❌ Membre introuvable.', ephemeral: true });
         }
-        if (!memberGuild.voice.channel) {
+
+        if (!memberGuild.voice?.channelId) {
             return interaction.reply({ content: `❌ ${user.username} n'est pas dans un salon vocal.`, ephemeral: true });
         }
 
