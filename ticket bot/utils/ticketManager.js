@@ -56,19 +56,28 @@ export async function getTicketByChannelOrRecover(channel, config) {
     if (!isInTicketCategory && !looksLikeTicket) return null;
 
     try {
-        const messages = await channel.messages.fetch({ limit: 20 });
+        const messages = await channel.messages.fetch({ limit: 50 });
         for (const msg of [...messages.values()].reverse()) {
             if (!msg.author.bot) continue;
-            if (msg.embeds.length === 0) continue;
-            const desc = msg.embeds[0]?.description || '';
-            const match = desc.match(/<@!?(\d+)>/);
-            if (match) {
-                const memberId = match[1];
-                const activeTickets = getActiveTickets();
-                activeTickets[memberId] = { channelId: channel.id, transcriptDone: false };
-                saveActiveTickets(activeTickets);
-                console.log(`🔄 Ticket auto-récupéré: #${channel.name} → userId:${memberId}`);
-                return { memberId, ticket: activeTickets[memberId] };
+
+            // Cherche <@userId> dans toutes les parties du message : content + tous les embeds
+            const searchTargets = [msg.content || ''];
+            for (const embed of msg.embeds) {
+                if (embed.description) searchTargets.push(embed.description);
+                if (embed.fields) embed.fields.forEach(f => searchTargets.push(f.value || ''));
+                if (embed.author?.name) searchTargets.push(embed.author.name);
+            }
+
+            for (const text of searchTargets) {
+                const match = text.match(/<@!?(\d+)>/);
+                if (match) {
+                    const memberId = match[1];
+                    const activeTickets = getActiveTickets();
+                    activeTickets[memberId] = { channelId: channel.id, transcriptDone: false };
+                    saveActiveTickets(activeTickets);
+                    console.log(`🔄 Ticket auto-récupéré: #${channel.name} → userId:${memberId}`);
+                    return { memberId, ticket: activeTickets[memberId] };
+                }
             }
         }
     } catch (err) {
