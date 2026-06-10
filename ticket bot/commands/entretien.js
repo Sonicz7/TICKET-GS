@@ -27,20 +27,17 @@ export default {
         const candidatId = ticketData.memberId;
         const candidat = await guild.members.fetch(candidatId).catch(() => null);
 
-        try {
-            await channel.setName(`entretien-${candidat ? candidat.user.username : 'candidat'}`);
+        const embed = new EmbedBuilder()
+            .setTitle('Entretien')
+            .setDescription(`${candidat ? `<@${candidatId}>` : 'Le candidat'} a été sélectionné(e) pour un entretien.\n\nMerci de nous indiquer tes disponibilités pour convenir d'un créneau ensemble.`)
+            .setColor(0x5865F2)
+            .setTimestamp();
 
-            const embed = new EmbedBuilder()
-                .setTitle('Entretien')
-                .setDescription(`${candidat ? `<@${candidatId}>` : 'Le candidat'} a été sélectionné(e) pour un entretien.\n\nMerci de nous indiquer tes disponibilités pour convenir d'un créneau ensemble.`)
-                .setColor(0x5865F2)
-                .setTimestamp();
+        // ✅ On répond AVANT de renommer le salon (setName est lent et peut expirer le token)
+        await interaction.editReply({ content: `<@${candidatId}>`, embeds: [embed] });
 
-            await interaction.editReply({ content: `<@${candidatId}>`, embeds: [embed] });
-
-        } catch (err) {
-            console.error('Erreur lors de la commande /entretien :', err);
-            await interaction.editReply({ content: '❌ Une erreur est survenue.' });
-        }
+        // Renommage du salon APRÈS la réponse, sans bloquer l'interaction
+        channel.setName(`entretien-${candidat ? candidat.user.username : 'candidat'}`)
+            .catch(err => console.error('Erreur lors du renommage du salon :', err));
     }
 };
