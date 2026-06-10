@@ -26,12 +26,10 @@ export default {
 
         const newName = interaction.options.getString('nom');
 
-        try {
-            await interaction.channel.setName(newName);
-            await interaction.editReply({ content: `✅ Le ticket a été renommé en **${newName}**.` });
-        } catch (err) {
-            console.error(err);
-            await interaction.editReply({ content: '❌ Impossible de renommer le ticket.' });
-        }
+        // ✅ Répondre AVANT setName (opération lente)
+        await interaction.editReply({ content: `✅ Le ticket sera renommé en **${newName}**.` });
+
+        interaction.channel.setName(newName)
+            .catch(err => console.error('Erreur lors du renommage /rename :', err));
     }
 };
