@@ -26,23 +26,25 @@ export default {
         const activeTickets = getActiveTickets();
         const candidatId = ticketData.memberId;
 
-        try {
-            await channel.setName('refus-❌');
-            await channel.setParent(config.refusCategory);
-            await channel.permissionOverwrites.set([
-                { id: guild.roles.everyone.id, deny: ['ViewChannel'] },
-                { id: config.staffRole, allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'] },
-                { id: config.viewerRole, allow: ['ViewChannel', 'ReadMessageHistory'], deny: ['SendMessages'] }
-            ]);
+        // ✅ Supprimer du registre et répondre AVANT les opérations lentes
+        delete activeTickets[candidatId];
+        saveActiveTickets(activeTickets);
 
-            delete activeTickets[candidatId];
-            saveActiveTickets(activeTickets);
+        await interaction.editReply({ content: '✅ Le ticket a été refusé et sera déplacé sous peu.' });
 
-            await interaction.editReply({ content: '✅ Le ticket a été refusé et déplacé.' });
-
-        } catch (err) {
-            console.error('Erreur lors du refus du ticket:', err);
-            await interaction.editReply({ content: '❌ Impossible de refuser le ticket.' });
-        }
+        // Opérations lentes après la réponse
+        (async () => {
+            try {
+                await channel.setName('refus-❌');
+                await channel.setParent(config.refusCategory);
+                await channel.permissionOverwrites.set([
+                    { id: guild.roles.everyone.id, deny: ['ViewChannel'] },
+                    { id: config.staffRole, allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'] },
+                    { id: config.viewerRole, allow: ['ViewChannel', 'ReadMessageHistory'], deny: ['SendMessages'] }
+                ]);
+            } catch (err) {
+                console.error('Erreur lors du déplacement du salon /refus :', err);
+            }
+        })();
     }
 };
