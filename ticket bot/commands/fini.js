@@ -18,7 +18,6 @@ export default {
             return interaction.reply({ content: '❌ Tu n\'as pas la permission d\'utiliser cette commande.', flags: MessageFlags.Ephemeral });
         }
 
-        // Defer immédiatement — /fini fait beaucoup d'opérations async
         await interaction.deferReply({ flags: MessageFlags.Ephemeral });
 
         const ticketData = await getTicketByChannelOrRecover(channel, config);
@@ -30,9 +29,8 @@ export default {
         const candidat = await guild.members.fetch(candidatId).catch(() => null);
         const activeTickets = getActiveTickets();
 
-        await interaction.editReply({ content: '⏳ Clôture du ticket en cours...' });
-
         try {
+            // Transcript (opération async mais relativement rapide)
             const transcriptPath = await generateTranscript(channel);
             const transcriptChannel = guild.channels.cache.get(config.transcriptChannel);
             if (transcriptChannel && transcriptPath) {
@@ -45,7 +43,7 @@ export default {
             delete activeTickets[candidatId];
             saveActiveTickets(activeTickets);
 
-            // Envoyer l'embed AVANT de changer les permissions (sinon le bot perd l'accès)
+            // Embed dans le salon du ticket
             const embed = new EmbedBuilder()
                 .setTitle('Formation terminée')
                 .setDescription(`Le ticket de ${candidat ? `<@${candidatId}>` : 'ce candidat'} a été clôturé.\n\nLe transcript a été sauvegardé et le salon a été archivé.`)
@@ -54,16 +52,23 @@ export default {
 
             await channel.send({ embeds: [embed] });
 
-            await channel.setName(`fini-${candidat ? candidat.user.username : 'candidat'}`);
-            await channel.setParent(ACCEPTE_CATEGORY);
-
-            await channel.permissionOverwrites.set([
-                { id: guild.roles.everyone.id, deny: ['ViewChannel'] },
-                { id: config.staffRole, allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'] },
-                { id: config.viewerRole, allow: ['ViewChannel', 'ReadMessageHistory'], deny: ['SendMessages'] }
-            ]);
-
+            // ✅ Répondre à l'interaction AVANT setName/setParent/permissions (opérations lentes)
             await interaction.editReply({ content: '✅ Ticket clôturé avec succès.' });
+
+            // Opérations lentes après la réponse
+            (async () => {
+                try {
+                    await channel.setName(`fini-${candidat ? candidat.user.username : 'candidat'}`);
+                    await channel.setParent(ACCEPTE_CATEGORY);
+                    await channel.permissionOverwrites.set([
+                        { id: guild.roles.everyone.id, deny: ['ViewChannel'] },
+                        { id: config.staffRole, allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory'] },
+                        { id: config.viewerRole, allow: ['ViewChannel', 'ReadMessageHistory'], deny: ['SendMessages'] }
+                    ]);
+                } catch (err) {
+                    console.error('Erreur lors de l\'archivage du salon /fini :', err);
+                }
+            })();
 
         } catch (err) {
             console.error('Erreur lors de la commande /fini :', err);
